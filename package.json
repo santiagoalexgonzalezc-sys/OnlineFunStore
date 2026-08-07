@@ -1,0 +1,82 @@
+{
+  "name": "onlinefunstore",
+  "version": "1.0.0",
+  "description": "An online store project.",
+  "main": "electron/main.cjs",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:seed": "tsx prisma/seed.ts",
+    "electron:compile": "echo 'No compilation needed for CommonJS'",
+    "electron:dev": "concurrently \"npm run dev\" \"wait-on http://localhost:3000 && electron .\"",
+    "electron:build": "npm run build && electron-builder",
+    "electron:pack": "npm run build && electron-builder --dir"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
+  "build": {
+    "appId": "com.storemanagement.simulator",
+    "productName": "Store Management Simulator",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "electron/**/*",
+      "out/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": "nsis"
+    },
+    "mac": {
+      "target": "dmg"
+    },
+    "linux": {
+      "target": "AppImage"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/santiagoalexgonzalezc-sys/OnlineFunStore.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/santiagoalexgonzalezc-sys/OnlineFunStore/issues"
+  },
+  "homepage": "https://github.com/santiagoalexgonzalezc-sys/OnlineFunStore#readme",
+  "dependencies": {
+    "@prisma/client": "^7.9.1",
+    "@supabase/supabase-js": "^2.112.2",
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/electron": "^1.4.38",
+    "@types/node": "^26.1.2",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
+    "autoprefixer": "^10.5.4",
+    "concurrently": "^10.0.4",
+    "electron": "^43.3.0",
+    "electron-builder": "^26.15.3",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^16.3.0",
+    "next": "^16.3.0",
+    "phaser": "^4.2.1",
+    "postcss": "^8.5.26",
+    "prisma": "^7.9.1",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "supabase": "^2.112.0",
+    "tailwindcss": "^4.3.3",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.23.11",
+    "typescript": "^6.0.3",
+    "wait-on": "^9.1.0"
+  }
+}

@@ -1,0 +1,154 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+// User accounts and authentication
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  stores        Store[]
+  gameSaves     GameSave[]
+}
+
+// Store configurations
+model Store {
+  id            String    @id @default(cuid())
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  name          String
+  storeType     String    // grocery, clothing, electronics, etc.
+  location      String?
+  
+  cash          Float     @default(0)
+  reputation    Int       @default(0)
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  inventory     Inventory[]
+  staff         Staff[]
+  transactions  Transaction[]
+  suppliers     SupplierRelationship[]
+}
+
+// Product catalog
+model Product {
+  id            String    @id @default(cuid())
+  name          String
+  category      String
+  description   String?
+  basePrice     Float
+  supplierId    String
+  
+  supplier      Supplier  @relation(fields: [supplierId], references: [id])
+  inventory     Inventory[]
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+// Supplier catalog
+model Supplier {
+  id            String    @id @default(cuid())
+  name          String
+  location      String?
+  reputation    Int       @default(50)
+  
+  products      Product[]
+  relationships SupplierRelationship[]
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+// Store inventory
+model Inventory {
+  id            String    @id @default(cuid())
+  storeId       String
+  store         Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  
+  productId     String
+  product       Product   @relation(fields: [productId], references: [id])
+  
+  quantity      Int       @default(0)
+  shelfPrice    Float
+  reorderLevel  Int       @default(10)
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  @@unique([storeId, productId])
+}
+
+// Supplier relationships per store
+model SupplierRelationship {
+  id            String    @id @default(cuid())
+  storeId       String
+  store         Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  
+  supplierId    String
+  supplier      Supplier  @relation(fields: [supplierId], references: [id])
+  
+  discount      Float     @default(0)
+  deliveryTime  Int       @default(3) // days
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  @@unique([storeId, supplierId])
+}
+
+// Staff management
+model Staff {
+  id            String    @id @default(cuid())
+  storeId       String
+  store         Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  
+  name          String
+  role          String    // cashier, stocker, manager
+  wage          Float
+  skill         Int       @default(1)
+  morale        Int       @default(100)
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+// Financial transactions
+model Transaction {
+  id            String    @id @default(cuid())
+  storeId       String
+  store         Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  
+  type          String    // sale, purchase, wage, expense
+  amount        Float
+  description   String?
+  
+  createdAt     DateTime  @default(now())
+}
+
+// Game saves for career mode
+model GameSave {
+  id            String    @id @default(cuid())
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  saveName      String
+  gameTime      Int       // in-game time in seconds
+  storeId       String    @unique
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
